@@ -2,7 +2,7 @@ package Sphinx::XMLpipe2;
 
 use XML::Hash::XS;
 
-our $VERSION = "0.01";
+our $VERSION = "0.02";
 
 sub new {
     my ($class, %args) = @_;
