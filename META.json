@@ -1,5 +1,5 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "Kit for SphinxSearch xmlpipe2 interface",
    "author" : [
       "bbon <bbon@mail.ru>"
    ],
@@ -52,5 +52,19 @@
       }
    },
    "release_status" : "unstable",
-   "version" : "0.01"
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/bbon/Sphinx-XMLpipe2/issues"
+      },
+      "homepage" : "https://github.com/bbon/Sphinx-XMLpipe2",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/bbon/Sphinx-XMLpipe2.git",
+         "web" : "https://github.com/bbon/Sphinx-XMLpipe2"
+      }
+   },
+   "version" : "0.01",
+   "x_contributors" : [
+      "mr_bbon <bbon@DT216.local>"
+   ]
 }
