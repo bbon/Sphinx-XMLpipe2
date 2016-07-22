@@ -19,9 +19,6 @@ sub new {
         utf8     => 0,
     );
 
-    $self->{'data'} = {'sphinx:document' => []};
-    $self->{'data'} = {'sphinx:killlist' => {'id' => []}};
-
     bless $self, $class;
     return $self
 }
@@ -38,6 +35,9 @@ sub add_data {
     my ($self, $data) = @_;
     return undef unless exists $data->{'id'};
 
+    $self->{'data'} = {'sphinx:document' => []}
+        unless exists $self->{'data'}->{'sphinx:document'};
+
     my %params = ();
     my @keys = (@{$self->{'fields'}}, keys %{$self->{'attrs'}});
 
@@ -53,6 +53,9 @@ sub add_data {
 sub remove_data {
     my ($self, $data) = @_;
     return undef unless exists $data->{'id'};
+
+    $self->{'data'} = {'sphinx:killlist' => {'id' => []}}
+        unless exists $self->{'data'}->{'sphinx:killlist'}->{'id'};
 
     push @{$self->{'data'}->{'sphinx:killlist'}->{'id'}}, [$data->{'id'}];
     return $self;
