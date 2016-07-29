@@ -9,6 +9,7 @@ sub new {
     return undef unless %args;
 
     my $self = \%args;
+    $self->{'data'} = {};
 
     $self->{'xmlprocessor'} = XML::Hash::XS->new(
         xml_decl => 0,
@@ -35,13 +36,24 @@ sub add_data {
     my ($self, $data) = @_;
     return undef unless exists $data->{'id'};
 
-    $self->{'data'} = {'sphinx:document' => []}
+    $self->{'data'}->{'sphinx:document'} = []
         unless exists $self->{'data'}->{'sphinx:document'};
 
     my %params = ();
-    my @keys = (@{$self->{'fields'}}, keys %{$self->{'attrs'}});
+    my @keys   = ();
 
-    map { $params{$_} = [$data->{$_}] } @keys;
+    if (ref($self->{'attrs'}) eq 'HASH') {
+        @keys = (@{$self->{'fields'}}, keys %{$self->{'attrs'}});
+        map { $params{$_} = [$data->{$_}] } @keys;
+    }
+    elsif (ref($self->{'attrs'}) eq 'ARRAY') {
+        my @def = ();
+        for my $definition (@{$self->{'attrs'}}) {
+            push @def, $definition->{'name'};
+        }
+        @keys = (@{$self->{'fields'}}, @def);
+    }
+    map { $params{$_} = [$data->{$_}] if exists $data->{$_}; } @keys;
 
     push @{$self->{'data'}->{'sphinx:document'}}, {
         id => $data->{'id'},
@@ -54,7 +66,7 @@ sub remove_data {
     my ($self, $data) = @_;
     return undef unless exists $data->{'id'};
 
-    $self->{'data'} = {'sphinx:killlist' => {'id' => []}}
+    $self->{'data'}->{'sphinx:killlist'} = {'id' => []}
         unless exists $self->{'data'}->{'sphinx:killlist'}->{'id'};
 
     push @{$self->{'data'}->{'sphinx:killlist'}->{'id'}}, [$data->{'id'}];
@@ -67,7 +79,7 @@ sub _fetch_header {
     my $header = {
         'sphinx:schema' => {
             'sphinx:field' => [],
-            'sphinx:attr' => [],
+            'sphinx:attr'  => [],
         }
     };
 
@@ -75,8 +87,17 @@ sub _fetch_header {
         push @{$header->{'sphinx:schema'}->{'sphinx:field'}}, {'name' => $field};
     }
 
-    for my $attr (keys %{$self->{'attrs'}}) {
-        push @{$header->{'sphinx:schema'}->{'sphinx:attr'}}, {'name' => $attr, 'type' => $self->{'attrs'}->{$attr}};
+    if (ref($self->{'attrs'}) eq 'HASH') {
+        for my $attr (keys %{$self->{'attrs'}}) {
+            push @{$header->{'sphinx:schema'}->{'sphinx:attr'}}, {'name' => $attr, 'type' => $self->{'attrs'}->{$attr}};
+        }
+    }
+    elsif (ref($self->{'attrs'}) eq 'ARRAY') {
+        for my $definition (@{$self->{'attrs'}}) {
+            my $node = {};
+            map {$node->{$_} = $definition->{$_} if exists $definition->{$_};} qw(name type bits default);
+            push @{$header->{'sphinx:schema'}->{'sphinx:attr'}}, $node;
+        }
     }
 
     return _pruning_xml($self->{'xmlprocessor'}->hash2xml($header));
@@ -109,7 +130,25 @@ Sphinx::XMLpipe2 - Kit for SphinxSearch xmlpipe2 interface
 
     my $sxml = new Sphinx::XMLpipe2(
         fields => [qw(author title content)],
-        attrs  => {published => 'timestamp',}
+        attrs  => {published => 'timestamp', section => 'int',}
+    );
+
+    or
+
+    my $sxml = new Sphinx::XMLpipe2(
+        fields => [qw(author title content)],
+        attrs  => [
+            {
+                name => 'published',
+                type => 'timestamp',
+            },
+            {
+                name    => 'section',
+                type    => 'int',
+                bits    => 8,
+                default => 1
+            },
+        ]
     );
 
     $sxml->add_data({
@@ -118,6 +157,7 @@ Sphinx::XMLpipe2 - Kit for SphinxSearch xmlpipe2 interface
         title      => 'Illusion is the first of all pleasures',
         content    => 'Man is least himself when he talks in his own person. Give him a mask, and he will tell you the truth.',
         published  => time(),
+        section    => 100500,
     });
 
     $sxml->remove_data({id => 27182818});
@@ -131,6 +171,7 @@ Sphinx::XMLpipe2 - Kit for SphinxSearch xmlpipe2 interface
 =item new %options
 
 Constructor. Takes a hash with options as an argument.
+The hash contains two keys: fields and attrs
 
 =back
 
@@ -157,6 +198,12 @@ Request for a single document remove from index (adds killist record to xml)
 Gets xml for output
 
 =back
+
+=head1 SEE ALSO
+
+L<Sphinx reference manual: xmlpipe2 data source|http://sphinxsearch.com/docs/latest/xmlpipe2.html>
+
+L<Sphinx::XML::Pipe2|http://search.cpan.org/~egor/Sphinx-XML-Pipe2-0.002/lib/Sphinx/XML/Pipe2.pm>
 
 =head1 LICENSE
 
