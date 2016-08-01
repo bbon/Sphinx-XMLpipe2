@@ -2,7 +2,7 @@ package Sphinx::XMLpipe2;
 
 use XML::Hash::XS;
 
-our $VERSION = "0.03";
+our $VERSION = "0.04";
 
 sub new {
     my ($class, %args) = @_;
@@ -145,8 +145,8 @@ Sphinx::XMLpipe2 - Kit for SphinxSearch xmlpipe2 interface
             {
                 name    => 'section',
                 type    => 'int',
-                bits    => 8,
-                default => 1
+                bits    => 8, # optional
+                default => 1  # optional
             },
         ]
     );
@@ -170,8 +170,9 @@ Sphinx::XMLpipe2 - Kit for SphinxSearch xmlpipe2 interface
 
 =item new %options
 
-Constructor. Takes a hash with options as an argument.
-The hash contains two keys: fields and attrs
+Constructor. Takes a hash with options as an argument (required).
+The hash contains two keys: fields (arrayref) and attrs (hashref or arrayref if you want to specify additional fields: "bits", "default").
+For details about "fields" and "attrs" see SphinxSearch manual.
 
 =back
 
@@ -179,7 +180,9 @@ The hash contains two keys: fields and attrs
 
 =item add_data $hashref
 
-Adds a single document to xml
+Adds a B<single> document to xml. The argument contains key-value pairs with fields/attrs.
+You can do multiple calls this method with different params set.
+Кeys are not properly validated by package.
 
 =back
 
@@ -187,7 +190,9 @@ Adds a single document to xml
 
 =item remove_data $hashref
 
-Request for a single document remove from index (adds killist record to xml)
+Request for a B<single> document remove from index (adds killist record to xml).
+The argument contains document_id: {id => $document_id}.
+You can do multiple calls this method with different params.
 
 =back
 
@@ -203,7 +208,7 @@ Gets xml for output
 
 L<Sphinx reference manual: xmlpipe2 data source|http://sphinxsearch.com/docs/latest/xmlpipe2.html>
 
-L<Sphinx::XML::Pipe2|http://search.cpan.org/~egor/Sphinx-XML-Pipe2-0.002/lib/Sphinx/XML/Pipe2.pm>
+Yet another xmlpipe2 package L<Sphinx::XML::Pipe2|http://search.cpan.org/~egor/Sphinx-XML-Pipe2-0.002/lib/Sphinx/XML/Pipe2.pm>
 
 =head1 LICENSE
 
