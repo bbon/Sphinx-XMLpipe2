@@ -64,7 +64,7 @@ Sphinx::XMLpipe2 - Kit for SphinxSearch xmlpipe2 interface
 
 - fetch
 
-    Gets xml for output
+    Fetch the result (xml)
 
 # SEE ALSO
 

@@ -2,7 +2,7 @@ package Sphinx::XMLpipe2;
 
 use XML::Hash::XS;
 
-our $VERSION = "0.04";
+our $VERSION = "0.05";
 
 sub new {
     my ($class, %args) = @_;
@@ -99,6 +99,7 @@ sub _fetch_header {
             push @{$header->{'sphinx:schema'}->{'sphinx:attr'}}, $node;
         }
     }
+    @{$header->{'sphinx:schema'}->{'sphinx:attr'}} = sort {$a->{name} cmp $b->{name}} @{$header->{'sphinx:schema'}->{'sphinx:attr'}};
 
     return _pruning_xml($self->{'xmlprocessor'}->hash2xml($header));
 }
@@ -200,7 +201,7 @@ You can do multiple calls this method with different params.
 
 =item fetch
 
-Gets xml for output
+Fetch the result (xml)
 
 =back
 

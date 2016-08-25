@@ -4,7 +4,7 @@
       "bbon <bbon@mail.ru>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.3, CPAN::Meta::Converter version 2.142690",
+   "generated_by" : "Minilla/v3.0.4, CPAN::Meta::Converter version 2.142690",
    "license" : [
       "perl_5"
    ],
@@ -64,7 +64,7 @@
          "web" : "https://github.com/bbon/Sphinx-XMLpipe2"
       }
    },
-   "version" : "0.04",
+   "version" : "0.05",
    "x_contributors" : [
       "mr_bbon <bbon@DT216.local>"
    ]

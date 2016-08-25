@@ -2,6 +2,10 @@ Revision history for Perl extension Sphinx-XMLpipe2
 
 {{$NEXT}}
 
+0.05 2016-08-25T13:38:22Z
+
+    - fix episodical error while run 'indexer --merge' e.g.: FATAL: failed to merge index 'delta_bla_bla' into index 'bla_bla': attribute mismatch
+
 0.04 2016-08-01T15:27:30Z
 
     - additional optional fields for sphinx:schema
